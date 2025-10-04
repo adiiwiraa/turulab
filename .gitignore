@@ -1,0 +1,55 @@
+# ==================================
+# === General / Project-Wide ===
+# ==================================
+# File spesifik OS/Editor
+.DS_Store
+.idea/
+
+# Aturan khusus untuk VSCode
+.vscode/*
+!.vscode/extensions.json
+
+# File environment, kunci API, atau password. Berlaku untuk root, backend, dan frontend.
+.env
+*.local
+
+
+# ==================================
+# === Backend (Python/Flask) ===
+# ==================================
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+/turulab-backend/venv/
+/turulab-backend/.venv/
+
+
+# ==================================
+# === Frontend (React/Vite) ===
+# ==================================
+# Folder dependensi Node.js
+/turulab-app/node_modules/
+
+# Folder hasil build untuk production
+/turulab-app/dist/
+/turulab-app/dist-ssr/
+
+# Log files
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor files
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
