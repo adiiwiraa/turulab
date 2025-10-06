@@ -53,6 +53,13 @@ const UserHistoryPage = () => {
           p9,
           created_at,
           predicted_result,
+          c1,
+          c2,
+          c3,
+          c4,
+          c5,
+          c6,
+          c7,
           profiles (
             full_name,
             email,
@@ -109,6 +116,14 @@ const UserHistoryPage = () => {
       'P7',
       'P8',
       'P9',
+      'C1',
+      'C2',
+      'C3',
+      'C4',
+      'C5',
+      'C6',
+      'C7',
+      'Total PSQL',
       'Hasil Prediksi'
     ];
     const csvContent = [
@@ -142,6 +157,14 @@ const UserHistoryPage = () => {
         item.p7,
         item.p8,
         item.p9,
+        item.c1,
+        item.c2,
+        item.c3,
+        item.c4,
+        item.c5,
+        item.c6,
+        item.c7,
+        item.c1 + item.c2 + item.c3 + item.c4 + item.c5 + item.c6 + item.c7,
         item.predicted_result
       ].join(','))
     ].join('\n');
@@ -207,6 +230,13 @@ const UserHistoryPage = () => {
             <tr>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal</th>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama Pengguna</th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C1</th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C2</th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C3</th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C4</th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C5</th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C6</th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C7</th>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hasil Prediksi</th>
             </tr>
           </thead>
@@ -218,6 +248,13 @@ const UserHistoryPage = () => {
                   <div>{item.profiles.full_name}</div>
                   <div className="text-xs text-gray-500">{item.profiles.email}</div>
                 </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c1}</td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c2}</td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c3}</td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c4}</td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c5}</td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c6}</td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c7}</td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                   <span className={`px-2 py-1 font-semibold leading-tight rounded-full ${
                     item.predicted_result === 'Baik' 
