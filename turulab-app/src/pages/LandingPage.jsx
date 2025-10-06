@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import HeroBackround from '../assets/images/hero-bg.jpg';
+import HeroBackround from '../assets/images/hero-bg2.jpg';
 // import HeroShape from '../assets/images/hero-shape.svg';
 
 const LandingPage = () => {
@@ -13,11 +13,11 @@ const LandingPage = () => {
 
             {/* Kolom Kiri: Teks dan Tombol */}
           <div className="lg:flex-grow md:w-1/2 lg:pr-24 md:pr-16 flex flex-col md:items-start md:text-left mb-16 md:mb-0 items-center text-center">
-            <span className="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-semibold mb-2">Selamat Datang di TuruLab</span>
+            <span className="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-semibold mb-2">Selamat Datang di TuruLab!</span>
             <h1 className="title-font sm:text-5xl text-4xl mb-4 font-extrabold text-white leading-20">
               Temukan Kualitas Tidur
               <br className="hidden lg:inline-block" />
-              Terbaik Anda Bersama TuruLab.
+              Terbaik Anda Bersama TuruLab
             </h1>
             <p className="mb-8 leading-relaxed text-white">
               Analisis pola tidur Anda secara cerdas, dapatkan wawasan mendalam, dan terima rekomendasi yang dipersonalisasi untuk istirahat malam yang lebih baik.
@@ -38,7 +38,7 @@ const LandingPage = () => {
             </div>
           </div>
 
-          <div className="lg:max-w-xl lg:w-full md:w-1/2 w-5/6 relative">
+          <div className="lg:max-w-xl lg:w-full md:w-1/2 w-5/6 relative hidden md:block">
             <svg className="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <clipPath id="blobShape">
@@ -46,7 +46,7 @@ const LandingPage = () => {
                 </clipPath>
               </defs>
               <image 
-                href="https://previews.123rf.com/images/surfupvector/surfupvector2007/surfupvector200700789/151949397-sleepless-woman-lying-in-bed-and-looking-at-alarm-clock-isolated-flat-vector-illustration-cartoon.jpg"
+                href="https://images.unsplash.com/photo-1487300001871-12053913095d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 x="0" 
                 y="0" 
                 width="100" 
@@ -64,7 +64,7 @@ const LandingPage = () => {
       <section className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="py-16 bg-white rounded-xl shadow-sm">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800">Bagaimana TuruLab. Bekerja?</h2>
+            <h2 className="text-4xl font-bold text-gray-800">Bagaimana TuruLab Bekerja?</h2>
             <p className="mt-2 text-gray-600">Tiga langkah mudah untuk tidur yang lebih baik.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center max-w-6xl mx-auto px-4">
@@ -104,7 +104,7 @@ const LandingPage = () => {
                 Misi Kami Adalah Membantu Anda Tidur Lebih Nyenyak
               </h1>
               <p className="mb-8 leading-relaxed text-gray-600">
-                Di TuruLab., kami percaya bahwa tidur berkualitas adalah pilar kesehatan. Kami menggabungkan metode klinis teruji (PSQI) dengan kekuatan kecerdasan buatan untuk memberikan Anda pemahaman yang jelas dan dapat ditindaklanjuti tentang pola tidur Anda. Tujuan kami sederhana: memberdayakan Anda untuk mencapai istirahat malam yang lebih baik demi kehidupan yang lebih sehat dan produktif.
+                Di TuruLab, kami percaya bahwa tidur berkualitas adalah pilar kesehatan. Kami menggabungkan metode klinis teruji (PSQI) dengan kekuatan kecerdasan buatan untuk memberikan Anda pemahaman yang jelas dan dapat ditindaklanjuti tentang pola tidur Anda. Tujuan kami sederhana: memberdayakan Anda untuk mencapai istirahat malam yang lebih baik demi kehidupan yang lebih sehat dan produktif.
               </p>
             </div>
           </div>
@@ -115,7 +115,7 @@ const LandingPage = () => {
         <div className="py-16">
           <div className="mb-12">
             <h2 className="text-4xl font-bold text-gray-800">Kenapa PSQI?</h2>
-            <p className="mt-2 text-gray-600">Pittsburgh Sleep Quality Index (PSQI) adalah instrumen standar yang menilai kualitas tidur dalam sebulan terakhir melalui 7 komponen. Skor total membantu mengklasifikasikan kualitas tidur dan menentukan area perbaikan.</p>
+            <p className="mt-2 text-gray-600"><a href="https://www.sleep.pitt.edu/psqi" className='font-bold test-primary'>Pittsburgh Sleep Quality Index (PSQI)</a> adalah instrumen standar yang menilai kualitas tidur dalam sebulan terakhir melalui 7 komponen. Skor total membantu mengklasifikasikan kualitas tidur dan menentukan area perbaikan.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl">
             <div className="p-y-6 flex items-center gap-x-4">

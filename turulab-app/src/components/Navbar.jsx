@@ -15,8 +15,8 @@ const Navbar = ({ session }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-            <Link to="/" className="text-2xl font-bold text-primary">
-              TuruLab.
+            <Link to="/" className="text-2xl font-bold text-primary flex items-center">
+              <img src="/turulab.svg" alt="TuruLab logo" className='mr-2 h-8 w-8'/> TuruLab 
             </Link>
           </div>
 

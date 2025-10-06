@@ -31,7 +31,7 @@ const AdminRoute = ({ session, children }) => {
   }, [session]);
 
   if (loading) {
-    return <div>Memeriksa otorisasi...</div>;
+    return <div className='text-center font-bold my-8'>Memeriksa otorisasi...</div>;
   }
 
   if (!session) {

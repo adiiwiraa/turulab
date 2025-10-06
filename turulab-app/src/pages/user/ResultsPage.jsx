@@ -99,7 +99,7 @@ const ResultsPage = () => {
   };
 
   if (loading) {
-    return <div className="text-center p-12">Menganalisis hasil Anda...</div>;
+    return <div className="text-center p-12 font-bold">Menganalisis hasil Anda...</div>;
   }
 
   if (!prediction) {
