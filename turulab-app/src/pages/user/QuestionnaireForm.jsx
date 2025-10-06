@@ -130,6 +130,13 @@ const QuestionnaireForm = () => {
           p8: answers.p8,
           p9: answers.p9,
           predicted_result: predictionResult.kualitas_tidur_prediksi,
+          c1: predictionResult.scores.C1,
+          c2: predictionResult.scores.C2,
+          c3: predictionResult.scores.C3,
+          c4: predictionResult.scores.C4,
+          c5: predictionResult.scores.C5,
+          c6: predictionResult.scores.C6,
+          c7: predictionResult.scores.C7,
           highest_score_component: predictionResult.komponen_tertinggi
         }]);
 
@@ -159,7 +166,7 @@ const QuestionnaireForm = () => {
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-800 mb-2">Kuesioner Kualitas Tidur</h1>
-      <p className="text-gray-600 mb-8">Mohon jawab semua pertanyaan berdasarkan kebiasaan Anda selama<a className='text-gray-600 mb-8 font-bold'> satu bulan terakhir</a></p>
+      <p className="text-gray-600 mb-8">Mohon jawab semua pertanyaan berdasarkan kebiasaan Anda selama <a className='text-gray-600 mb-8 font-bold'>satu bulan terakhir.</a></p>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -187,7 +194,7 @@ const QuestionnaireForm = () => {
             No. Telepon
           </h3>
           <div className="space-y-4">
-            <input type="text" name="no_telepon" value={answers.no_telepon} onChange={handleChange} required className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" />
+            <input type="text" name="no_telepon" value={answers.no_telepon} onChange={handleChange} className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" />
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -219,20 +226,20 @@ const QuestionnaireForm = () => {
           </div>
         </div>
 
-        <Question number="1" title="Biasanya pukul berapa Anda pergi tidur?">
+        <Question number="1" title="Dalam kurun waktu satu bulan ke belakang, iasanya pukul berapa Anda pergi tidur?">
           <input type="time" name="p1" value={answers.p1} onChange={handleChange} required className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" />
         </Question>
 
-        <Question number="2" title="Biasanya berapa menit yang Anda perlukan sampai Anda tertidur?">
+        <Question number="2" title="Dalam kurun waktu satu bulan ke belakang, biasanya berapa menit yang Anda perlukan sampai Anda tertidur?">
           <input type="number" name="p2" value={answers.p2} onChange={handleChange} required className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" placeholder="Contoh: 30" />
         </Question>
 
-        <Question number="3" title="Biasanya pukul berapa Anda bangun?">
+        <Question number="3" title="Dalam kurun waktu satu bulan ke belakang, biasanya pukul berapa Anda bangun?">
           <input type="time" name="p3" value={answers.p3} onChange={handleChange} required className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" />
         </Question>
         
-        <Question number="4" title="Berapa jam Anda tidur setiap malam? (Bisa desimal)">
-          <input type="number" step="0.1" name="p4" value={answers.p4} onChange={handleChange} required className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" placeholder="Contoh: 7.5" />
+        <Question number="4" title="Dalam kurun waktu satu bulan ke belakang, berapa jam Anda tidur setiap malam?">
+          <input type="number" step="0.1" name="p4" value={answers.p4} onChange={handleChange} required className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" placeholder="Contoh: 7" />
         </Question>
         
         <Question number="5A" title="Dalam kurun waktu satu bulan ke belakang, seberapa sering Anda tidak bisa tertidur dalam waktu 30 menit?">
@@ -354,7 +361,7 @@ const QuestionnaireForm = () => {
             ))}
           </div>
         </Question>
-        <Question number="5H" title="Dalam kurun waktu satu bulan ke belakang, seberapa sering Anda mimpi buruk?">
+        <Question number="5H" title="Dalam kurun waktu satu bulan ke belakang, seberapa sering Anda mengalami mimpi buruk?">
           <div className="space-y-4">
             {radioOptions.map(opt => (
               <label key={opt.value} className="flex items-center">
@@ -389,7 +396,7 @@ const QuestionnaireForm = () => {
           </div>
         </Question>
         <Question number="5J" title="Alasan lainnya">
-          <input type="text" name="answer_p5_10" value={answers.answer_p5_10} onChange={handleChange} required className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" placeholder="Gangguan tidur Anda yang lain" />
+          <input type="text" name="answer_p5_10" value={answers.answer_p5_10} onChange={handleChange} className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" placeholder="Gangguan tidur Anda yang lain" />
           <div className="space-y-4">
             {radioOptions.map(opt => (
               <label key={opt.value} className="flex items-center">
@@ -407,13 +414,13 @@ const QuestionnaireForm = () => {
           </div>
         </Question>
 
-        <Question number="6" title="Bagaimana Anda menilai kualitas tidur Anda secara keseluruhan?">
+        <Question number="6" title="Dalam kurun waktu satu bulan ke belakang, bagaimana Anda menilai kualitas tidur Anda secara keseluruhan?">
              <label className="flex items-center"><input type="radio" name="p6" value="0" checked={String(answers.p6) === "0"} onChange={handleChange} className="mr-2"/>Sangat Baik</label>
-             <label className="flex items-center"><input type="radio" name="p6" value="1" checked={String(answers.p6) === "1"} onChange={handleChange} className="mr-2"/>Cukup Baik</label>
-             <label className="flex items-center"><input type="radio" name="p6" value="2" checked={String(answers.p6) === "2"} onChange={handleChange} className="mr-2"/>Cukup Buruk</label>
+             <label className="flex items-center"><input type="radio" name="p6" value="1" checked={String(answers.p6) === "1"} onChange={handleChange} className="mr-2"/>Baik</label>
+             <label className="flex items-center"><input type="radio" name="p6" value="2" checked={String(answers.p6) === "2"} onChange={handleChange} className="mr-2"/>Buruk</label>
              <label className="flex items-center"><input type="radio" name="p6" value="3" checked={String(answers.p6) === "3"} onChange={handleChange} className="mr-2"/>Sangat Buruk</label>
         </Question>
-        <Question number="7" title="Dalam satu bulan ke belakang, berapa kali Anda mengonsumsi obat untuk membantu Anda tidur?">
+        <Question number="7" title="Dalam kurun waktu satu bulan ke belakang, berapa kali Anda mengonsumsi obat untuk membantu Anda tidur?">
              <label className="flex items-center"><input type="radio" name="p7" value="0" checked={String(answers.p7) === "0"} onChange={handleChange} className="mr-2"/>Tidak pernah</label>
              <label className="flex items-center"><input type="radio" name="p7" value="1" checked={String(answers.p7) === "1"} onChange={handleChange} className="mr-2"/>Kurang dari sekali seminggu</label>
              <label className="flex items-center"><input type="radio" name="p7" value="2" checked={String(answers.p7) === "2"} onChange={handleChange} className="mr-2"/>Sekali atau dua kali seminggu</label>
@@ -427,8 +434,8 @@ const QuestionnaireForm = () => {
         </Question>
         <Question number="9" title="Dalam kurun waktu satu bulan ke belakang, seberapa masalah bagi Anda untuk tetap bersemangat dalam melakukan sesuatu?">
              <label className="flex items-center"><input type="radio" name="p9" value="0" checked={String(answers.p9) === "0"} onChange={handleChange} className="mr-2"/>Sangat baik</label>
-             <label className="flex items-center"><input type="radio" name="p9" value="1" checked={String(answers.p9) === "1"} onChange={handleChange} className="mr-2"/>Cukup Baik</label>
-             <label className="flex items-center"><input type="radio" name="p9" value="2" checked={String(answers.p9) === "2"} onChange={handleChange} className="mr-2"/>Cukup buruk</label>
+             <label className="flex items-center"><input type="radio" name="p9" value="1" checked={String(answers.p9) === "1"} onChange={handleChange} className="mr-2"/>Baik</label>
+             <label className="flex items-center"><input type="radio" name="p9" value="2" checked={String(answers.p9) === "2"} onChange={handleChange} className="mr-2"/>Buruk</label>
              <label className="flex items-center"><input type="radio" name="p9" value="3" checked={String(answers.p9) === "3"} onChange={handleChange} className="mr-2"/>Sangat buruk</label>
         </Question>
 

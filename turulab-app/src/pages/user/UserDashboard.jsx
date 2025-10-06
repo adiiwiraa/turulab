@@ -85,7 +85,7 @@ const UserDashboard = () => {
               <img src={DartImg} alt="" className='h-20'/>
             </div>
             <div>
-              <p className='text-lg font-bold text-primary'>Accuracy 96.77%</p>
+              <p className='text-lg font-bold text-primary'>Accuracy 88%</p>
               <p className='text-gray-600 mt-2 text-sm'>
                 <span className='text-green-700 font-semibold'>Ability to identify</span> sleep patterns effectively.
               </p>
@@ -133,8 +133,46 @@ const UserDashboard = () => {
               <div className="mt-6">
                 <h3 className="text-xl font-bold text-gray-800">Kualitas Tidur: {lastPrediction.predicted_result}</h3>
                 <p className="text-gray-600 mt-2">
-                  Rekomendasi utama kami berdasarkan hasil ini adalah untuk fokus pada <span className="font-semibold">{lastPrediction.highest_score_component || 'konsistensi jadwal tidur'}.</span>
+                  Rekomendasi kami berdasarkan nilai tertinggi dari hasil dibawah ini.
                 </p>
+              </div>
+              <div className='mt-6 grid grid-cols-8 text-center'>
+                <div className='text-start'>
+                  <p className='text-sm text-gray-500'>Component</p>
+                  <p className='text-sm text-gray-500 mt-2'>Score</p>
+                </div>
+                <div>
+                  <p className='text-sm text-gray-500'>C1</p>
+                  <p className='font-medium text-gray-700 mt-2'>{lastPrediction.c1}</p>
+                </div>
+                <div>
+                  <p className='text-sm text-gray-500'>C2</p>
+                  <p className='font-medium text-gray-700 mt-2'>{lastPrediction.c2}</p>
+                </div>
+                <div>
+                  <p className='text-sm text-gray-500'>C3</p>
+                  <p className='font-medium text-gray-700 mt-2'>{lastPrediction.c3}</p>
+                </div>
+                <div>
+                  <p className='text-sm text-gray-500'>C4</p>
+                  <p className='font-medium text-gray-700 mt-2'>{lastPrediction.c4}</p>
+                </div>
+                <div>
+                  <p className='text-sm text-gray-500'>C5</p>
+                  <p className='font-medium text-gray-700 mt-2'>{lastPrediction.c5}</p>
+                </div>
+                <div>
+                  <p className='text-sm text-gray-500'>C6</p>
+                  <p className='font-medium text-gray-700 mt-2'>{lastPrediction.c6}</p>
+                </div>
+                <div>
+                  <p className='text-sm text-gray-500'>C7</p>
+                  <p className='font-medium text-gray-700 mt-2'>{lastPrediction.c7}</p>
+                </div>
+              </div>
+              <div className='mt-6 flex items-center gap-x-6'>
+                <p className='text-sm text-gray-500'>Total PSQI Score:</p>
+                <p className='text-xl font-bold text-gray-800'>{lastPrediction.c1 + lastPrediction.c2 + lastPrediction.c3 + lastPrediction.c4 + lastPrediction.c5 + lastPrediction.c6 + lastPrediction.c7}</p>
               </div>
             </div>
           ) : (
