@@ -191,7 +191,7 @@ const QuestionnaireForm = () => {
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            No. Telepon
+            No. Telepon (opsional)
           </h3>
           <div className="space-y-4">
             <input type="text" name="no_telepon" value={answers.no_telepon} onChange={handleChange} className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" />
@@ -226,7 +226,7 @@ const QuestionnaireForm = () => {
           </div>
         </div>
 
-        <Question number="1" title="Dalam kurun waktu satu bulan ke belakang, iasanya pukul berapa Anda pergi tidur?">
+        <Question number="1" title="Dalam kurun waktu satu bulan ke belakang, biasanya pukul berapa Anda pergi tidur?">
           <input type="time" name="p1" value={answers.p1} onChange={handleChange} required className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" />
         </Question>
 
@@ -395,7 +395,7 @@ const QuestionnaireForm = () => {
             ))}
           </div>
         </Question>
-        <Question number="5J" title="Alasan lainnya">
+        <Question number="5J" title="Alasan lainnya (opsional)">
           <input type="text" name="answer_p5_10" value={answers.answer_p5_10} onChange={handleChange} className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" placeholder="Gangguan tidur Anda yang lain" />
           <div className="space-y-4">
             {radioOptions.map(opt => (
