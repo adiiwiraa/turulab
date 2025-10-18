@@ -20,76 +20,96 @@ const UserHistoryPage = () => {
       clearTimeout(handler);
     };
   }, [search]);
+  
+  // Fungsi untuk mengambil data riwayat
+  const fetchHistory = async () => {
+    setLoading(true);
+    let query = supabase
+      .from('predictions')
+      .select(`
+        id,
+        jenis_kelamin,
+        no_telepon,
+        angkatan,
+        program_studi,
+        p1_usual_bed_time,
+        p2_sleep_latency,
+        p3_usual_wake_time,
+        p4_sleep_duration,
+        p5_1,
+        p5_2,
+        p5_3,
+        p5_4,
+        p5_5,
+        p5_6,
+        p5_7,
+        p5_8,
+        p5_9,
+        p5_10,
+        answer_p5_10,
+        p6,
+        p7,
+        p8,
+        p9,
+        created_at,
+        predicted_result,
+        c1,
+        c2,
+        c3,
+        c4,
+        c5,
+        c6,
+        c7,
+        profiles (
+          full_name,
+          email,
+          nim
+        )
+      `)
+      .order('created_at', { ascending: false });
+
+    // Filter berdasarkan pencarian nama atau email
+    if (debouncedSearch && debouncedSearch.trim() !== '') {
+      const term = `%${debouncedSearch.trim()}%`;
+      query = query.or('profiles.full_name.ilike.' + term + ',profiles.email.ilike.' + term);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching history:', error);
+      alert('Gagal memuat riwayat: ' + error.message);
+    } else {
+      setHistory(data || []);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchHistory = async () => {
-      setLoading(true);
-      let query = supabase
-        .from('predictions')
-        .select(`
-          id,
-          jenis_kelamin,
-          no_telepon,
-          angkatan,
-          program_studi,
-          p1_usual_bed_time,
-          p2_sleep_latency,
-          p3_usual_wake_time,
-          p4_sleep_duration,
-          p5_1,
-          p5_2,
-          p5_3,
-          p5_4,
-          p5_5,
-          p5_6,
-          p5_7,
-          p5_8,
-          p5_9,
-          p5_10,
-          answer_p5_10,
-          p6,
-          p7,
-          p8,
-          p9,
-          created_at,
-          predicted_result,
-          c1,
-          c2,
-          c3,
-          c4,
-          c5,
-          c6,
-          c7,
-          profiles (
-            full_name,
-            email,
-            nim
-          )
-        `)
-        .order('created_at', { ascending: false });
-
-      // If there is a search term, filter by user name or email
-      if (debouncedSearch && debouncedSearch.trim() !== '') {
-        const term = `%${debouncedSearch.trim()}%`;
-        query = query.or('profiles.full_name.ilike.' + term + ',profiles.email.ilike.' + term);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching history:', error);
-      } else {
-        setHistory(data || []);
-      }
-      setLoading(false);
-    };
     fetchHistory();
   }, [debouncedSearch]);
 
+  // Fungsi untuk menghapus data prediksi
+  const handleDeletePrediction = async (predictionId, userName) => {
+    if (window.confirm(`Anda yakin ingin menghapus data prediksi milik "${userName}"? Tindakan ini tidak dapat dibatalkan.`)) {
+      const { error } = await supabase
+        .from('predictions')
+        .delete()
+        .eq('id', predictionId);
+      
+      if (error) {
+        alert('Gagal menghapus data prediksi: ' + error.message);
+      } else {
+        alert('Data prediksi berhasil dihapus.');
+        fetchHistory(); // Muat ulang data setelah berhasil dihapus
+      }
+    }
+  };
+
+  // Fungsi untuk mengunduh CSV
   const downloadCSV = () => {
     const headers = [
       'ID Prediksi', 
-      // 'Tanggal', 
       'Nama Pengguna', 
       'Email', 
       'Nim',
@@ -97,32 +117,9 @@ const UserHistoryPage = () => {
       'No Telepon',
       'Angkatan',
       'Program Studi',
-      'P1',
-      'P2',
-      'P3',
-      'P4',
-      'P5_1',
-      'P5_2',
-      'P5_3',
-      'P5_4',
-      'P5_5',
-      'P5_6',
-      'P5_7',
-      'P5_8',
-      'P5_9',
-      'P5_10',
-      'Answer P5_10',
-      'P6',
-      'P7',
-      'P8',
-      'P9',
-      'C1',
-      'C2',
-      'C3',
-      'C4',
-      'C5',
-      'C6',
-      'C7',
+      'P1', 'P2', 'P3', 'P4', 'P5_1', 'P5_2', 'P5_3', 'P5_4', 'P5_5', 'P5_6',
+      'P5_7', 'P5_8', 'P5_9', 'P5_10', 'Answer P5_10', 'P6', 'P7', 'P8', 'P9',
+      'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7',
       'Total PSQL',
       'Hasil Prediksi'
     ];
@@ -130,7 +127,6 @@ const UserHistoryPage = () => {
       headers.join(','),
       ...history.map(item => [
         item.id,
-        // new Date(item.created_at).toLocaleString('id-ID'),
         item.profiles.full_name,
         item.profiles.email,
         item.profiles.nim,
@@ -142,28 +138,10 @@ const UserHistoryPage = () => {
         item.p2_sleep_latency,
         item.p3_usual_wake_time,
         item.p4_sleep_duration,
-        item.p5_1,
-        item.p5_2,
-        item.p5_3,
-        item.p5_4,
-        item.p5_5,
-        item.p5_6,
-        item.p5_7,
-        item.p5_8,
-        item.p5_9,
-        item.p5_10,
-        item.answer_p5_10,
-        item.p6,
-        item.p7,
-        item.p8,
-        item.p9,
-        item.c1,
-        item.c2,
-        item.c3,
-        item.c4,
-        item.c5,
-        item.c6,
-        item.c7,
+        item.p5_1, item.p5_2, item.p5_3, item.p5_4, item.p5_5, item.p5_6,
+        item.p5_7, item.p5_8, item.p5_9, item.p5_10, item.answer_p5_10,
+        item.p6, item.p7, item.p8, item.p9,
+        item.c1, item.c2, item.c3, item.c4, item.c5, item.c6, item.c7,
         item.c1 + item.c2 + item.c3 + item.c4 + item.c5 + item.c6 + item.c7,
         item.predicted_result
       ].join(','))
@@ -211,7 +189,6 @@ const UserHistoryPage = () => {
         <PredictedResultPieChart history={history} />
       </div>
       
-
       <div className="bg-white shadow-md rounded-lg overflow-hidden p-6">
         <div className="flex items-center justify-between mb-4">
           <p className="font-semibold text-primary">Data Riwayat Prediksi</p>
@@ -225,49 +202,60 @@ const UserHistoryPage = () => {
             />
           </form>
         </div>
-        <table className="min-w-full leading-normal">
-          <thead>
-            <tr>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal</th>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama Pengguna</th>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C1</th>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C2</th>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C3</th>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C4</th>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C5</th>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C6</th>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C7</th>
-              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hasil Prediksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {history.map((item) => (
-              <tr key={item.id}>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{new Date(item.created_at).toLocaleString('id-ID')}</td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <div>{item.profiles.full_name}</div>
-                  <div className="text-xs text-gray-500">{item.profiles.email}</div>
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c1}</td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c2}</td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c3}</td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c4}</td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c5}</td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c6}</td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c7}</td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <span className={`px-2 py-1 font-semibold leading-tight rounded-full ${
-                    item.predicted_result === 'Baik' 
-                      ? 'bg-green-200 text-green-900' 
-                      : 'bg-red-200 text-red-900'
-                  }`}>
-                    {item.predicted_result}
-                  </span>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full leading-normal">
+            <thead>
+              <tr>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal</th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama Pengguna</th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C1</th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C2</th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C3</th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C4</th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C5</th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C6</th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">C7</th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hasil Prediksi</th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {history.map((item) => (
+                <tr key={item.id}>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{new Date(item.created_at).toLocaleString('id-ID')}</td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    <div>{item.profiles.full_name}</div>
+                    <div className="text-xs text-gray-500">{item.profiles.email}</div>
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c1}</td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c2}</td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c3}</td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c4}</td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c5}</td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c6}</td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{item.c7}</td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    <span className={`px-2 py-1 font-semibold leading-tight rounded-full ${
+                      item.predicted_result === 'Baik' 
+                        ? 'bg-green-200 text-green-900' 
+                        : 'bg-red-200 text-red-900'
+                    }`}>
+                      {item.predicted_result}
+                    </span>
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    <button
+                      onClick={() => handleDeletePrediction(item.id, item.profiles.full_name)}
+                      className="text-red-600 hover:text-red-900 font-semibold"
+                    >
+                      Hapus
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

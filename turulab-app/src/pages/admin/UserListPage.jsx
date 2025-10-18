@@ -17,29 +17,51 @@ const UserListPage = () => {
     };
   }, [search]);
 
+  // Function to fetch users
+  const fetchUsers = async () => {
+    setLoading(true);
+    let query = supabase
+      .from('profiles')
+      .select('id, full_name, email, role, created_at')
+      .order('created_at', { ascending: false });
+
+    if (debouncedSearch && debouncedSearch.trim() !== '') {
+      const term = `%${debouncedSearch.trim()}%`;
+      query = query.or(`full_name.ilike.${term},email.ilike.${term}`);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching users:', error);
+      alert('Gagal memuat pengguna: ' + error.message);
+    } else {
+      setUsers(data || []);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      let query = supabase
-        .from('profiles')
-        .select('id, full_name, email, role, created_at');
-
-      if (debouncedSearch && debouncedSearch.trim() !== '') {
-        const term = `%${debouncedSearch.trim()}%`;
-        query = query.or(`full_name.ilike.${term},email.ilike.${term}`);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching users:', error);
-      } else {
-        setUsers(data || []);
-      }
-      setLoading(false);
-    };
     fetchUsers();
   }, [debouncedSearch]);
+
+  // DELETE User
+  const handleDeleteUser = async (userId, userFullName) => {
+    if (window.confirm(`Anda yakin ingin menghapus pengguna "${userFullName}"? Tindakan ini tidak dapat dibatalkan.`)) {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (error) {
+        alert('Gagal menghapus pengguna: ' + error.message);
+      } else {
+        alert('Pengguna berhasil dihapus.');
+        fetchUsers(); // Refresh data
+      }
+    }
+  };
+
 
   if (loading) {
     return <div>Memuat daftar pengguna...</div>;
@@ -63,12 +85,6 @@ const UserListPage = () => {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             />
           </form>
-          {loading && (
-            <svg className="animate-spin ml-2 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-            </svg>
-          )}
         </div>
         <table className="min-w-full leading-normal">
           <thead>
@@ -77,6 +93,7 @@ const UserListPage = () => {
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Role</th>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal Bergabung</th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -90,6 +107,14 @@ const UserListPage = () => {
                   </span>
                 </td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{new Date(user.created_at).toLocaleDateString('id-ID')}</td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <button
+                    onClick={() => handleDeleteUser(user.id, user.full_name)}
+                    className="text-red-600 font-bold hover:text-red-900"
+                  >
+                    Hapus
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
