@@ -1,23 +1,24 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient'; // Pastikan path ini benar
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+    const { data: authData, error: authError } =
+      await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
     if (authError) {
       setError(authError.message);
@@ -27,9 +28,9 @@ const LoginPage = () => {
 
     if (authData.user) {
       const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', authData.user.id)
+        .from("profiles")
+        .select("role")
+        .eq("id", authData.user.id)
         .single();
 
       if (profileError) {
@@ -37,27 +38,32 @@ const LoginPage = () => {
         setLoading(false);
         return;
       }
-      
-      if (profileData.role === 'admin') {
-        navigate('/admin/dashboard');
+
+      if (profileData.role === "admin") {
+        navigate("/admin/dashboard");
       } else {
-        navigate('/dashboard');
+        navigate("/dashboard");
       }
     }
-    
+
     setLoading(false);
   };
 
   return (
     <div className="flex justify-center items-center py-12  min-h-[80vh]">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold text-center text-gray-800">Login ke Akun Anda</h2>
-        
+        <h2 className="text-3xl font-bold text-center text-gray-800">
+          Login ke Akun Anda
+        </h2>
+
         {error && <p className="text-red-500 text-center">{error}</p>}
-        
+
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Alamat Email
             </label>
             <input
@@ -72,7 +78,10 @@ const LoginPage = () => {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -92,13 +101,16 @@ const LoginPage = () => {
               disabled={loading}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400"
             >
-              {loading ? 'Memproses...' : 'Login'}
+              {loading ? "Memproses..." : "Login"}
             </button>
           </div>
         </form>
         <p className="text-sm text-center text-gray-600">
-          Belum punya akun?{' '}
-          <Link to="/register" className="font-medium text-primary hover:text-blue-500">
+          Belum punya akun?{" "}
+          <Link
+            to="/register"
+            className="font-medium text-primary hover:text-blue-500"
+          >
             Daftar di sini
           </Link>
         </p>

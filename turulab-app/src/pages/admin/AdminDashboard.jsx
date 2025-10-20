@@ -1,104 +1,156 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import ClockImg from '../../assets/images/clock.png';
-import DartImg from '../../assets/images/dart.png';
-import LampImg from '../../assets/images/lamp.png';
-import TabbedRecommendations from '../TabbedRecommendations';
+import React, { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabaseClient";
+import toast from "react-hot-toast";
+import PredictedResultChart from "../../components/PredictedResultChart";
+import PredictedResultPieChart from "../../components/PredictedResultPieChart";
+import PredictedResultCountChart from "../../components/PredictedResultCountChart";
+import PredictedResultByAngkatanChart from "../../components/PredictedResultByAngkatanChart";
+import TabbedRecommendations from "../TabbedRecommendations";
 
 const StatCard = ({ title, value, loading }) => (
-  <div className="bg-white p-6 rounded-lg shadow-md">
-    <h3 className="text-gray-500 text-sm font-medium">{title}</h3>
+  <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+    <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">
+      {title}
+    </h3>
     {loading ? (
-      <p className="text-3xl font-semibold text-gray-800 mt-2">Memuat...</p>
+      <div className="mt-2 h-8 w-24 bg-gray-200 rounded animate-pulse"></div>
     ) : (
-      <p className="text-3xl font-semibold text-gray-800 mt-2">{value}</p>
+      <p className="text-3xl font-semibold text-gray-800 mt-2">
+        {value ?? "N/A"}
+      </p>
     )}
   </div>
 );
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState({ users: 0, predictions: 0 });
-  const [loading, setLoading] = useState(true);
+  // State untuk statistik dasar (jumlah user & prediksi)
+  const [stats, setStats] = useState({ users: null, predictions: null });
+  const [loadingStats, setLoadingStats] = useState(true);
 
+  // State untuk data riwayat (untuk grafik)
+  const [history, setHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+
+  // Menggabungkan fetch stats dan history
   useEffect(() => {
-    const fetchStats = async () => {
-      // Ambil jumlah total pengguna
-      const { count: userCount } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true });
+    const fetchData = async () => {
+      setLoadingStats(true);
+      setLoadingHistory(true);
 
-      // Ambil jumlah total prediksi
-      const { count: predictionCount } = await supabase
-        .from('predictions')
-        .select('*', { count: 'exact', head: true });
+      const fetchStatsPromise = async () => {
+        try {
+          const { count: userCount, error: userError } = await supabase
+            .from("profiles")
+            .select("*", { count: "exact", head: true });
+          if (userError) throw userError;
 
-      setStats({ users: userCount, predictions: predictionCount });
-      setLoading(false);
+          const { count: predictionCount, error: predictionError } =
+            await supabase
+              .from("predictions")
+              .select("*", { count: "exact", head: true });
+          if (predictionError) throw predictionError;
+
+          setStats({ users: userCount, predictions: predictionCount });
+        } catch (error) {
+          console.error("Error fetching stats:", error);
+          toast.error(`Gagal memuat statistik: ${error.message}`);
+          setStats({ users: "Error", predictions: "Error" });
+        } finally {
+          setLoadingStats(false);
+        }
+      };
+
+      const fetchHistoryPromise = async () => {
+        try {
+          const { data: historyData, error: historyError } = await supabase
+            .from("predictions")
+            .select(`jenis_kelamin, angkatan, program_studi, predicted_result`)
+            .order("created_at", { ascending: false });
+          if (historyError) throw historyError;
+          setHistory(historyData || []);
+        } catch (error) {
+          console.error("Error fetching history for charts:", error);
+          toast.error(`Gagal memuat data grafik: ${error.message}`);
+        } finally {
+          setLoadingHistory(false);
+        }
+      };
+
+      await Promise.all([fetchStatsPromise(), fetchHistoryPromise()]);
     };
 
-    fetchStats();
+    fetchData();
   }, []);
 
   return (
-    <div className='space-y-6'>
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard Admin</h1>
+    <div className="space-y-8">
+      <h1 className="text-3xl font-bold text-gray-800">Dashboard Admin</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className='bg-white p-4 rounded-lg shadow-md border border-gray-200'>
-          <p className='text-gray-400'>
-            <span className='text-primary font-bold'>Prediction</span> | Prediction in just seconds
-          </p>
-          <div className='flex gap-x-3 mt-3'>
-            <div className='w-3/5 h-auto flex justify-center items-center'>
-              <img src={ClockImg} alt="" className='h-20'/>
-            </div>
-            <div>
-              <p className='text-lg font-bold text-primary'>Under 1 Seconds</p>
-              <p className='text-gray-600 mt-2 text-sm'>
-                <span className='text-green-700 font-semibold'>The advantages</span> of quick predictions include faster decision-making and improved user experience.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className='bg-white p-4 rounded-lg shadow-md border border-gray-200'>
-          <p className='text-gray-400'>
-            <span className='text-primary font-bold'>Accuracy</span> | Prediction model accuracy
-          </p>
-          <div className='flex gap-x-3 mt-3'>
-            <div className='w-3/5 h-auto flex justify-center items-center'>
-              <img src={DartImg} alt="" className='h-20'/>
-            </div>
-            <div>
-              <p className='text-lg font-bold text-primary'>Accuracy 88%</p>
-              <p className='text-gray-600 mt-2 text-sm'>
-                <span className='text-green-700 font-semibold'>Ability to identify</span> sleep patterns effectively.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className='bg-white p-4 rounded-lg shadow-md border border-gray-200'>
-          <p className='text-gray-400'>
-            <span className='text-primary font-bold'>How</span> | How It Works
-          </p>
-          <div className='flex gap-x-3 mt-3'>
-            <div className='w-3/5 h-auto flex justify-center items-center'>
-              <img src={LampImg} alt="" className='h-20'/>
-            </div>
-            <div>
-              <p className='text-lg font-bold text-primary'>Click "Smart Prediction"</p>
-              <p className='text-gray-600 mt-2 text-sm'>
-                <span className='text-green-700 font-semibold'>Fill out</span> the PSQI questionnaire to get your sleep quality prediction.
-              </p>
-            </div>
-          </div>
-        </div>
+      {/* Section Statistik */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <StatCard
+          title="Total Pengguna"
+          value={stats.users}
+          loading={loadingStats}
+        />
+        <StatCard
+          title="Total Prediksi"
+          value={stats.predictions}
+          loading={loadingStats}
+        />
       </div>
 
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Rekomendasi Tidur Berdasarkan Komponen</h2>
+      {/* Section Grafik */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          Visualisasi Data Prediksi
+        </h2>
+        {loadingHistory ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-64 flex justify-center items-center text-gray-400">
+              Memuat Grafik...
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-64 flex justify-center items-center text-gray-400">
+              Memuat Grafik...
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-64 flex justify-center items-center text-gray-400">
+              Memuat Grafik...
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-64 flex justify-center items-center text-gray-400">
+              Memuat Grafik...
+            </div>
+          </div>
+        ) : history.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white shadow-md rounded-lg overflow-hidden p-6">
+              <PredictedResultCountChart history={history} />
+            </div>
+            <div className="bg-white shadow-md rounded-lg overflow-hidden p-6">
+              <PredictedResultChart history={history} />
+            </div>
+            <div className="bg-white shadow-md rounded-lg overflow-hidden p-6">
+              <PredictedResultByAngkatanChart history={history} />
+            </div>
+            <div className="bg-white shadow-md rounded-lg overflow-hidden p-6">
+              <PredictedResultPieChart history={history} />
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white p-8 rounded-lg shadow-md text-center border border-dashed border-gray-300">
+            <p className="text-gray-500">
+              Belum ada data prediksi untuk ditampilkan dalam grafik.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Section Rekomendasi */}
+      <div className="mt-8 mb-15">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          Rekomendasi Tidur Umum
+        </h2>
         <TabbedRecommendations />
       </div>
-      
     </div>
   );
 };

@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient';
-import toast from'react-hot-toast';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
+import toast from "react-hot-toast";
 
 const RegisterPage = () => {
-  const [fullName, setFullName] = useState('');
-  const [nim, setNim] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [nim, setNim] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     const { _data, error } = await supabase.auth.signUp({
       email: email,
@@ -27,12 +27,12 @@ const RegisterPage = () => {
         },
       },
     });
-    
+
     if (error) {
       setError(error.message);
     } else {
-      toast.success('Pendaftaran berhasil!');
-      navigate('/login');
+      toast.success("Pendaftaran berhasil!");
+      navigate("/login");
     }
     setLoading(false);
   };
@@ -40,13 +40,18 @@ const RegisterPage = () => {
   return (
     <div className="flex justify-center items-center py-12 bg-gray-50 min-h-screen">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold text-center text-gray-800">Buat Akun Baru</h2>
-        
+        <h2 className="text-3xl font-bold text-center text-gray-800">
+          Buat Akun Baru
+        </h2>
+
         {error && <p className="text-red-500 text-center">{error}</p>}
-        
+
         <form onSubmit={handleRegister} className="space-y-6">
           <div>
-            <label htmlFor="nim" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="nim"
+              className="block text-sm font-medium text-gray-700"
+            >
               NIM (Nomor Induk Mahasiswa)
             </label>
             <input
@@ -60,7 +65,10 @@ const RegisterPage = () => {
             />
           </div>
           <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="fullName"
+              className="block text-sm font-medium text-gray-700"
+            >
               Nama Lengkap
             </label>
             <input
@@ -74,7 +82,10 @@ const RegisterPage = () => {
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Alamat Email
             </label>
             <input
@@ -88,7 +99,10 @@ const RegisterPage = () => {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -108,13 +122,16 @@ const RegisterPage = () => {
               disabled={loading}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none disabled:bg-blue-400"
             >
-              {loading ? 'Memproses...' : 'Daftar'}
+              {loading ? "Memproses..." : "Daftar"}
             </button>
           </div>
         </form>
         <p className="text-sm text-center text-gray-600">
-          Sudah punya akun?{' '}
-          <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+          Sudah punya akun?{" "}
+          <Link
+            to="/login"
+            className="font-medium text-blue-600 hover:text-blue-500"
+          >
             Login di sini
           </Link>
         </p>
