@@ -22,7 +22,6 @@ const QuestionnaireForm = () => {
   // State untuk menyimpan semua jawaban form
   const [answers, setAnswers] = useState({
     jenis_kelamin: '',
-    no_telepon: '',
     angkatan: '',
     program_studi: '',
     p1: '',
@@ -62,7 +61,7 @@ const QuestionnaireForm = () => {
     setError('');
 
     try {
-      // 1. Kirim data ke API Machine Learning Anda
+      // 1. Kirim data ke API Machine Learning
       const predictionResponse = await fetch(predictionApiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -107,7 +106,6 @@ const QuestionnaireForm = () => {
         .insert([{
           user_id: user.id,
           jenis_kelamin: answers.jenis_kelamin,
-          no_telepon: answers.no_telepon,
           angkatan: answers.angkatan,
           program_studi: answers.program_studi,
           p1_usual_bed_time: answers.p1,
@@ -191,14 +189,6 @@ const QuestionnaireForm = () => {
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            No. Telepon (opsional)
-          </h3>
-          <div className="space-y-4">
-            <input type="text" name="no_telepon" value={answers.no_telepon} onChange={handleChange} className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
             Angkatan
           </h3>
           <div className="space-y-4">
@@ -252,6 +242,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_1) === String(opt.value)}
                   onChange={handleChange}
+                  required // Ditambahkan required di radio group
                   className="mr-2"
                 />
                 {opt.label}
@@ -269,6 +260,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_2) === String(opt.value)}
                   onChange={handleChange}
+                  required
                   className="mr-2"
                 />
                 {opt.label}
@@ -286,6 +278,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_3) === String(opt.value)}
                   onChange={handleChange}
+                  required
                   className="mr-2"
                 />
                 {opt.label}
@@ -303,6 +296,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_4) === String(opt.value)}
                   onChange={handleChange}
+                  required
                   className="mr-2"
                 />
                 {opt.label}
@@ -320,6 +314,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_5) === String(opt.value)}
                   onChange={handleChange}
+                  required
                   className="mr-2"
                 />
                 {opt.label}
@@ -337,6 +332,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_6) === String(opt.value)}
                   onChange={handleChange}
+                  required
                   className="mr-2"
                 />
                 {opt.label}
@@ -354,6 +350,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_7) === String(opt.value)}
                   onChange={handleChange}
+                  required
                   className="mr-2"
                 />
                 {opt.label}
@@ -371,6 +368,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_8) === String(opt.value)}
                   onChange={handleChange}
+                  required
                   className="mr-2"
                 />
                 {opt.label}
@@ -388,6 +386,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_9) === String(opt.value)}
                   onChange={handleChange}
+                  required
                   className="mr-2"
                 />
                 {opt.label}
@@ -406,6 +405,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_10) === String(opt.value)}
                   onChange={handleChange}
+                  required
                   className="mr-2"
                 />
                 {opt.label}
@@ -415,28 +415,28 @@ const QuestionnaireForm = () => {
         </Question>
 
         <Question number="6" title="Dalam kurun waktu satu bulan ke belakang, bagaimana Anda menilai kualitas tidur Anda secara keseluruhan?">
-             <label className="flex items-center"><input type="radio" name="p6" value="0" checked={String(answers.p6) === "0"} onChange={handleChange} className="mr-2"/>Sangat Baik</label>
-             <label className="flex items-center"><input type="radio" name="p6" value="1" checked={String(answers.p6) === "1"} onChange={handleChange} className="mr-2"/>Baik</label>
-             <label className="flex items-center"><input type="radio" name="p6" value="2" checked={String(answers.p6) === "2"} onChange={handleChange} className="mr-2"/>Buruk</label>
-             <label className="flex items-center"><input type="radio" name="p6" value="3" checked={String(answers.p6) === "3"} onChange={handleChange} className="mr-2"/>Sangat Buruk</label>
+             <label className="flex items-center"><input type="radio" name="p6" value="0" checked={String(answers.p6) === "0"} onChange={handleChange} required className="mr-2"/>Sangat Baik</label>
+             <label className="flex items-center"><input type="radio" name="p6" value="1" checked={String(answers.p6) === "1"} onChange={handleChange} required className="mr-2"/>Baik</label>
+             <label className="flex items-center"><input type="radio" name="p6" value="2" checked={String(answers.p6) === "2"} onChange={handleChange} required className="mr-2"/>Buruk</label>
+             <label className="flex items-center"><input type="radio" name="p6" value="3" checked={String(answers.p6) === "3"} onChange={handleChange} required className="mr-2"/>Sangat Buruk</label>
         </Question>
         <Question number="7" title="Dalam kurun waktu satu bulan ke belakang, berapa kali Anda mengonsumsi obat untuk membantu Anda tidur?">
-             <label className="flex items-center"><input type="radio" name="p7" value="0" checked={String(answers.p7) === "0"} onChange={handleChange} className="mr-2"/>Tidak pernah</label>
-             <label className="flex items-center"><input type="radio" name="p7" value="1" checked={String(answers.p7) === "1"} onChange={handleChange} className="mr-2"/>Kurang dari sekali seminggu</label>
-             <label className="flex items-center"><input type="radio" name="p7" value="2" checked={String(answers.p7) === "2"} onChange={handleChange} className="mr-2"/>Sekali atau dua kali seminggu</label>
-             <label className="flex items-center"><input type="radio" name="p7" value="3" checked={String(answers.p7) === "3"} onChange={handleChange} className="mr-2"/>Tiga kali atau lebih seminggu</label>
+             <label className="flex items-center"><input type="radio" name="p7" value="0" checked={String(answers.p7) === "0"} onChange={handleChange} required className="mr-2"/>Tidak pernah</label>
+             <label className="flex items-center"><input type="radio" name="p7" value="1" checked={String(answers.p7) === "1"} onChange={handleChange} required className="mr-2"/>Kurang dari sekali seminggu</label>
+             <label className="flex items-center"><input type="radio" name="p7" value="2" checked={String(answers.p7) === "2"} onChange={handleChange} required className="mr-2"/>Sekali atau dua kali seminggu</label>
+             <label className="flex items-center"><input type="radio" name="p7" value="3" checked={String(answers.p7) === "3"} onChange={handleChange} required className="mr-2"/>Tiga kali atau lebih seminggu</label>
         </Question>
         <Question number="8" title="Dalam kurun waktu satu bulan ke belakang, seberapa sering Anda mengalami kesulitan melakukan aktivitas sehari-hari (mengemudi, makan, atau beraktivitas sosial)?">
-             <label className="flex items-center"><input type="radio" name="p8" value="0" checked={String(answers.p8) === "0"} onChange={handleChange} className="mr-2"/>Tidak ada masalah sama sekali</label>
-             <label className="flex items-center"><input type="radio" name="p8" value="1" checked={String(answers.p8) === "1"} onChange={handleChange} className="mr-2"/>Hanya sedikit menjadi masalah</label>
-             <label className="flex items-center"><input type="radio" name="p8" value="2" checked={String(answers.p8) === "2"} onChange={handleChange} className="mr-2"/>Cukup menjadi masalah</label>
-             <label className="flex items-center"><input type="radio" name="p8" value="3" checked={String(answers.p8) === "3"} onChange={handleChange} className="mr-2"/>Masalah besar</label>
+             <label className="flex items-center"><input type="radio" name="p8" value="0" checked={String(answers.p8) === "0"} onChange={handleChange} required className="mr-2"/>Tidak ada masalah sama sekali</label>
+             <label className="flex items-center"><input type="radio" name="p8" value="1" checked={String(answers.p8) === "1"} onChange={handleChange} required className="mr-2"/>Hanya sedikit menjadi masalah</label>
+             <label className="flex items-center"><input type="radio" name="p8" value="2" checked={String(answers.p8) === "2"} onChange={handleChange} required className="mr-2"/>Cukup menjadi masalah</label>
+             <label className="flex items-center"><input type="radio" name="p8" value="3" checked={String(answers.p8) === "3"} onChange={handleChange} required className="mr-2"/>Masalah besar</label>
         </Question>
         <Question number="9" title="Dalam kurun waktu satu bulan ke belakang, seberapa masalah bagi Anda untuk tetap bersemangat dalam melakukan sesuatu?">
-             <label className="flex items-center"><input type="radio" name="p9" value="0" checked={String(answers.p9) === "0"} onChange={handleChange} className="mr-2"/>Sangat baik</label>
-             <label className="flex items-center"><input type="radio" name="p9" value="1" checked={String(answers.p9) === "1"} onChange={handleChange} className="mr-2"/>Baik</label>
-             <label className="flex items-center"><input type="radio" name="p9" value="2" checked={String(answers.p9) === "2"} onChange={handleChange} className="mr-2"/>Buruk</label>
-             <label className="flex items-center"><input type="radio" name="p9" value="3" checked={String(answers.p9) === "3"} onChange={handleChange} className="mr-2"/>Sangat buruk</label>
+             <label className="flex items-center"><input type="radio" name="p9" value="0" checked={String(answers.p9) === "0"} onChange={handleChange} required className="mr-2"/>Sangat baik</label>
+             <label className="flex items-center"><input type="radio" name="p9" value="1" checked={String(answers.p9) === "1"} onChange={handleChange} required className="mr-2"/>Baik</label>
+             <label className="flex items-center"><input type="radio" name="p9" value="2" checked={String(answers.p9) === "2"} onChange={handleChange} required className="mr-2"/>Buruk</label>
+             <label className="flex items-center"><input type="radio" name="p9" value="3" checked={String(answers.p9) === "3"} onChange={handleChange} required className="mr-2"/>Sangat buruk</label>
         </Question>
 
 
