@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { predictionApiUrl } from '../../lib/config';
+import toast from 'react-hot-toast';
 
 // Komponen helper untuk setiap pertanyaan agar lebih rapi
 const Question = ({ number, title, children }) => (
@@ -59,6 +60,8 @@ const QuestionnaireForm = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    const loadingToastId = toast.loading('Mengirim kuesioner...');
 
     try {
       // 1. Kirim data ke API Machine Learning
@@ -143,12 +146,16 @@ const QuestionnaireForm = () => {
       }
 
       // 4. Arahkan ke hasil
-      alert('Kuesioner berhasil dikirim! Menganalisis hasil Anda...');
+      toast.dismiss(loadingToastId);
+      toast.success('Kuesioner berhasil dikirim!')
       navigate('/hasil');
 
     } catch (error) {
-      setError(error.message);
+      toast.dismiss(loadingToastId);
+      const errorMassage = error.massage || 'Terjadi kesalahan saat mengirim kuesioner.';
+      toast.error(errorMassage)
       console.error('Submission error:', error);
+      setError(errorMassage);
     } finally {
       setLoading(false);
     }

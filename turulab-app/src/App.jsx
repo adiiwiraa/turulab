@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { supabase } from './lib/supabaseClient';
+import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
 import AdminLayout from './components/admin/AdminLayout';
 
@@ -51,6 +52,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Toaster position="top-center" reverseOrder={false} />
       <Routes>
         {/* Route Publik */}
         <Route element={<Layout session={session} />}>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import toast from'react-hot-toast';
 
 const RegisterPage = () => {
   const [fullName, setFullName] = useState('');
@@ -16,7 +17,7 @@ const RegisterPage = () => {
     setLoading(true);
     setError('');
 
-    const { data, error } = await supabase.auth.signUp({
+    const { _data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
       options: {
@@ -30,7 +31,7 @@ const RegisterPage = () => {
     if (error) {
       setError(error.message);
     } else {
-      alert('Pendaftaran berhasil!');
+      toast.success('Pendaftaran berhasil!');
       navigate('/login');
     }
     setLoading(false);
