@@ -101,7 +101,7 @@ const UserDashboard = () => {
               <img src={DartImg} alt="" className="h-20" />
             </div>
             <div>
-              <p className="text-lg font-bold text-primary">Accuracy 88%</p>
+              <p className="text-lg font-bold text-primary">Accuracy 96%</p>
               <p className="text-gray-600 mt-2 text-sm">
                 <span className="text-green-700 font-semibold">
                   Ability to identify

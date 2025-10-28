@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import HeroBackround from "../assets/images/hero-bg2.jpg";
-// import HeroShape from '../assets/images/hero-shape.svg';
 
 const LandingPage = () => {
   return (
@@ -204,8 +203,6 @@ const LandingPage = () => {
         <div className="bg-white container mx-auto flex px-5 md:flex-row flex-col items-center py-12">
           <div className="container mx-auto flex px-5 md:flex-row flex-col-reverse items-center">
             <div className="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0 md:pr-10 lg:pr-0">
-              {/* Ganti div ini dengan gambar/ilustrasi Anda */}
-              {/* Anda bisa mencari ilustrasi "Random Forest algorithm" atau "Decision Tree Ensemble" */}
               <div className="bg-gray-100 h-80 rounded-lg flex items-center justify-center border border-gray-200">
                 <img
                   src="https://uploads-ssl.webflow.com/61af164800e38cf1b6c60b55/64c0c20d61bda9e68f630468_Random%20forest.webp"

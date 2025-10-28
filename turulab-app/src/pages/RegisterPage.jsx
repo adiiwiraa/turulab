@@ -130,7 +130,7 @@ const RegisterPage = () => {
           Sudah punya akun?{" "}
           <Link
             to="/login"
-            className="font-medium text-blue-600 hover:text-blue-500"
+            className="font-medium text-primary hover:text-blue-500"
           >
             Login di sini
           </Link>

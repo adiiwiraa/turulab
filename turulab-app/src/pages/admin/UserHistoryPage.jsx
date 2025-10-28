@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../../lib/supabaseClient"; // Pastikan path ini benar
-import ConfirmationModal from "../../components/ConfirmationModal"; // Pastikan path ini benar
+import { supabase } from "../../lib/supabaseClient";
+import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
 
 const UserHistoryPage = () => {
