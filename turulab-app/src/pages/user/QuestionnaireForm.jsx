@@ -324,7 +324,7 @@ const QuestionnaireForm = () => {
                   value={String(opt.value)}
                   checked={String(answers.p5_1) === String(opt.value)}
                   onChange={handleChange}
-                  required // Ditambahkan required di radio group
+                  required
                   className="mr-2"
                 />
                 {opt.label}
@@ -647,7 +647,7 @@ const QuestionnaireForm = () => {
               required
               className="mr-2"
             />
-            Tidak ada masalah sama sekali
+            Tidak Pernah
           </label>
           <label className="flex items-center">
             <input
@@ -659,7 +659,7 @@ const QuestionnaireForm = () => {
               required
               className="mr-2"
             />
-            Hanya sedikit menjadi masalah
+            Kurang dari sekali seminggu
           </label>
           <label className="flex items-center">
             <input
@@ -671,7 +671,7 @@ const QuestionnaireForm = () => {
               required
               className="mr-2"
             />
-            Cukup menjadi masalah
+            Sekali atau dua kali seminggu
           </label>
           <label className="flex items-center">
             <input
@@ -683,7 +683,7 @@ const QuestionnaireForm = () => {
               required
               className="mr-2"
             />
-            Masalah besar
+            Tiga kali atau lebih seminggu
           </label>
         </Question>
         <Question
@@ -700,7 +700,7 @@ const QuestionnaireForm = () => {
               required
               className="mr-2"
             />
-            Sangat baik
+            Tidak ada masalah sama sekali
           </label>
           <label className="flex items-center">
             <input
@@ -712,7 +712,7 @@ const QuestionnaireForm = () => {
               required
               className="mr-2"
             />
-            Baik
+            Hanya sedikit menjadi masalah
           </label>
           <label className="flex items-center">
             <input
@@ -724,7 +724,7 @@ const QuestionnaireForm = () => {
               required
               className="mr-2"
             />
-            Buruk
+            Cukup menjadi masalah
           </label>
           <label className="flex items-center">
             <input
@@ -736,7 +736,7 @@ const QuestionnaireForm = () => {
               required
               className="mr-2"
             />
-            Sangat buruk
+            Masalah Besar
           </label>
         </Question>
 
