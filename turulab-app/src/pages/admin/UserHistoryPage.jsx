@@ -35,12 +35,12 @@ const UserHistoryPage = () => {
         p5_1, p5_2, p5_3, p5_4, p5_5, p5_6, p5_7, p5_8, p5_9, p5_10, answer_p5_10,
         p6, p7, p8, p9, created_at, predicted_result,
         c1, c2, c3, c4, c5, c6, c7,
-        profiles ( full_name, email, nim )
+        profiles!left ( full_name, email, nim ) // <-- FOKUS DI SINI: profiles!left
       `
       )
       .order("created_at", { ascending: false });
 
-    // Filter berdasarkan pencarian nama atau email
+    // Filter berdasarkan pencarian nama atau email (Filter ini akan tetap bekerja dengan aman)
     if (debouncedSearch && debouncedSearch.trim() !== "") {
       const term = `%${debouncedSearch.trim()}%`;
       query = query.or(
@@ -53,6 +53,7 @@ const UserHistoryPage = () => {
     if (error) {
       console.error("Error fetching history:", error);
       toast.error("Gagal memuat riwayat: " + error.message);
+      setHistory([]);
     } else {
       setHistory(data || []);
     }
@@ -63,13 +64,13 @@ const UserHistoryPage = () => {
     fetchHistory();
   }, [debouncedSearch]);
 
-  // Fungsi untuk MEMBUKA modal konfirmasi hapus prediksi
+  // Fungsi untuk modal konfirmasi hapus prediksi
   const handleDeletePrediction = (predictionId, userName) => {
     setPredictionToDelete({ id: predictionId, userName: userName });
     setIsModalOpen(true);
   };
 
-  // Fungsi yang dijalankan SAAT KONFIRMASI di modal
+  // Fungsi yang dijalankan di modal
   const confirmDeletePrediction = async () => {
     if (!predictionToDelete) return;
 

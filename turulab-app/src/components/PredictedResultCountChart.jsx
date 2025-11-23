@@ -4,7 +4,6 @@ import ReactApexChart from "react-apexcharts";
 const RESULTS = ["Baik", "Buruk"];
 
 const PredictedResultCountChart = ({ history }) => {
-  // Count for each predicted_result
   const counts = RESULTS.map(
     (result) => history.filter((h) => h.predicted_result === result).length
   );
@@ -25,6 +24,7 @@ const PredictedResultCountChart = ({ history }) => {
       bar: {
         horizontal: false,
         columnWidth: "50%",
+        distributed: true,
       },
     },
     xaxis: {
@@ -34,10 +34,10 @@ const PredictedResultCountChart = ({ history }) => {
     yaxis: {
       title: { text: "Jumlah" },
     },
-    legend: {
-      show: false,
-    },
-    colors: ["#22c55e", "#ef4444"], // green for Baik, red for Buruk
+    legend: { show: false },
+
+    colors: ["#22c55e", "#ef4444"],
+
     dataLabels: { enabled: true },
     tooltip: {
       y: {

@@ -50,39 +50,42 @@ const UserListPage = () => {
     fetchUsers();
   }, [debouncedSearch]);
 
-  // Fungsi untuk MEMBUKA modal konfirmasi
   const handleDeleteUser = (userId, userFullName) => {
     setUserToDelete({ id: userId, fullName: userFullName });
     setIsModalOpen(true);
   };
 
-  // Fungsi yang dijalankan SAAT KONFIRMASI di modal
   const confirmDeleteUser = async () => {
     if (!userToDelete) return;
 
     const toastId = toast.loading(
-      `Menghapus pengguna "${userToDelete.fullName}"...`
+      `Menghapus pengguna "${userToDelete.fullName}" secara permanen...`
     );
 
-    const { error } = await supabase
-      .from("profiles")
-      .delete()
-      .eq("id", userToDelete.id);
+    try {
+      const { error } = await supabase.rpc("delete_user_completely", {
+        target_user_id: userToDelete.id,
+      });
 
-    setIsModalOpen(false);
-    const deletedUserName = userToDelete.fullName;
-    setUserToDelete(null);
+      if (error) throw error;
 
-    if (error) {
-      toast.error(
-        `Gagal menghapus pengguna "${deletedUserName}": ${error.message}`,
-        { id: toastId }
-      );
-    } else {
+      // Jika sukses
+      setIsModalOpen(false);
+      const deletedUserName = userToDelete.fullName;
+      setUserToDelete(null);
+
       toast.success(`Pengguna "${deletedUserName}" berhasil dihapus.`, {
         id: toastId,
       });
-      fetchUsers(); // Refresh data
+
+      fetchUsers(); // Refresh data tabel
+    } catch (error) {
+      console.error("Gagal menghapus:", error);
+      setIsModalOpen(false);
+
+      toast.error(`Gagal menghapus: ${error.message || error.details}`, {
+        id: toastId,
+      });
     }
   };
 
@@ -186,8 +189,7 @@ const UserListPage = () => {
         title="Konfirmasi Hapus Pengguna"
       >
         Anda yakin ingin menghapus pengguna{" "}
-        <strong className="px-1">{userToDelete?.fullName}</strong>? Tindakan ini
-        tidak dapat dibatalkan.
+        <strong className="px-1">{userToDelete?.fullName}</strong>?
       </ConfirmationModal>
     </div>
   );

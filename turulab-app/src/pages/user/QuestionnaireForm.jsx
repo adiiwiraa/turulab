@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabaseClient";
 import { predictionApiUrl } from "../../lib/config";
 import toast from "react-hot-toast";
 
-// Komponen helper untuk setiap pertanyaan agar lebih rapi
+// Komponen helper untuk setiap pertanyaan
 const Question = ({ number, title, children }) => (
   <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
     <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -184,11 +184,16 @@ const QuestionnaireForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            NIM
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">NIM</h3>
           <div className="space-y-4">
-            <input type="text" name="nim" value={answers.nim} onChange={handleChange} required className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md" />
+            <input
+              type="text"
+              name="nim"
+              value={answers.nim}
+              onChange={handleChange}
+              required
+              className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md"
+            />
           </div>
         </div> */}
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
