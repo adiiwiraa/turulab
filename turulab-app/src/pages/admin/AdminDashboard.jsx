@@ -31,6 +31,45 @@ const AdminDashboard = () => {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
+  // State untuk filter semester
+  const [selectedAcademicYear, setSelectedAcademicYear] = useState("");
+  const [selectedSemester, setSelectedSemester] = useState("");
+
+  // Helper function untuk generate tahun ajaran options
+  const getAcademicYearOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    // Generate 5 tahun ajaran terakhir (dari tahun sekarang ke belakang)
+    for (let i = 0; i < 5; i++) {
+      const year = currentYear - i;
+      years.push(`${year}/${year + 1}`);
+    }
+    return years;
+  };
+
+  // Helper function untuk menghitung range tanggal berdasarkan semester
+  const getSemesterDateRange = (academicYear, semester) => {
+    if (!academicYear || !semester) return null;
+
+    // Parse tahun ajaran (format: "2025/2026")
+    const [startYear, endYear] = academicYear.split("/").map(Number);
+
+    if (semester === "Genap") {
+      // Genap: Februari - Juli (bulan 2-7)
+      return {
+        start: `${startYear}-02-01T00:00:00.000Z`,
+        end: `${startYear}-07-31T23:59:59.999Z`,
+      };
+    } else if (semester === "Ganjil") {
+      // Ganjil: Agustus - Januari tahun berikutnya (bulan 8-12 tahun sekarang, bulan 1 tahun berikutnya)
+      return {
+        start: `${startYear}-08-01T00:00:00.000Z`,
+        end: `${endYear}-01-31T23:59:59.999Z`,
+      };
+    }
+    return null;
+  };
+
   // Menggabungkan fetch stats dan history
   useEffect(() => {
     const fetchData = async () => {
@@ -39,9 +78,11 @@ const AdminDashboard = () => {
 
       const fetchStatsPromise = async () => {
         try {
+          // Exclude admin dari user count
           const { count: userCount, error: userError } = await supabase
             .from("profiles")
-            .select("*", { count: "exact", head: true });
+            .select("*", { count: "exact", head: true })
+            .neq("role", "admin");
           if (userError) throw userError;
 
           const { count: predictionCount, error: predictionError } =
@@ -62,10 +103,40 @@ const AdminDashboard = () => {
 
       const fetchHistoryPromise = async () => {
         try {
-          const { data: historyData, error: historyError } = await supabase
+          let query = supabase
             .from("predictions")
-            .select(`jenis_kelamin, angkatan, program_studi, predicted_result`)
+            .select(
+              `predicted_result, created_at, profiles!left ( jenis_kelamin, angkatan, program_studi )`
+            )
             .order("created_at", { ascending: false });
+
+          // Filter berdasarkan semester jika dipilih
+          if (selectedAcademicYear) {
+            if (selectedSemester) {
+              // Filter per semester (6 bulan)
+              const dateRange = getSemesterDateRange(
+                selectedAcademicYear,
+                selectedSemester
+              );
+              if (dateRange) {
+                query = query
+                  .gte("created_at", dateRange.start)
+                  .lte("created_at", dateRange.end);
+              }
+            } else {
+              // Jika hanya tahun ajaran dipilih, filter seluruh tahun ajaran (Agustus - Juli tahun berikutnya)
+              const [startYear, endYear] = selectedAcademicYear
+                .split("/")
+                .map(Number);
+              const startDate = `${startYear}-08-01T00:00:00.000Z`;
+              const endDate = `${endYear}-07-31T23:59:59.999Z`;
+              query = query
+                .gte("created_at", startDate)
+                .lte("created_at", endDate);
+            }
+          }
+
+          const { data: historyData, error: historyError } = await query;
           if (historyError) throw historyError;
           setHistory(historyData || []);
         } catch (error) {
@@ -80,7 +151,7 @@ const AdminDashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [selectedAcademicYear, selectedSemester]);
 
   return (
     <div className="space-y-8">
@@ -102,9 +173,62 @@ const AdminDashboard = () => {
 
       {/* Section Grafik */}
       <div className="mt-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          Visualisasi Data Prediksi
-        </h2>
+        <div className="flex flex-wrap items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">
+            Visualisasi Data Prediksi
+          </h2>
+
+          {/* Filter Semester */}
+          <div className="flex flex-wrap items-center gap-4 mt-4 sm:mt-0">
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="filter-academic-year"
+                className="text-sm font-medium text-gray-700"
+              >
+                Tahun Ajaran:
+              </label>
+              <select
+                id="filter-academic-year"
+                value={selectedAcademicYear}
+                onChange={(e) => {
+                  setSelectedAcademicYear(e.target.value);
+                  // Reset semester jika tahun ajaran diubah
+                  if (!e.target.value) {
+                    setSelectedSemester("");
+                  }
+                }}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-300 bg-white"
+              >
+                <option value="">Semua Tahun</option>
+                {getAcademicYearOptions().map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="filter-semester"
+                className="text-sm font-medium text-gray-700"
+              >
+                Semester:
+              </label>
+              <select
+                id="filter-semester"
+                value={selectedSemester}
+                onChange={(e) => setSelectedSemester(e.target.value)}
+                disabled={!selectedAcademicYear}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-300 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+              >
+                <option value="">Semua Semester</option>
+                <option value="Ganjil">Ganjil</option>
+                <option value="Genap">Genap</option>
+              </select>
+            </div>
+          </div>
+        </div>
         {loadingHistory ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-64 flex justify-center items-center text-gray-400">

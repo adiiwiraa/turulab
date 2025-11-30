@@ -8,10 +8,10 @@ const PredictedResultByAngkatanChart = ({ history }) => {
   // For each angkatan, count Baik/Buruk
   const counts = ANGKATAN.map((angkatan) => {
     const baik = history.filter(
-      (h) => h.angkatan === angkatan && h.predicted_result === "Baik"
+      (h) => h.profiles?.angkatan === angkatan && h.predicted_result === "Baik"
     ).length;
     const buruk = history.filter(
-      (h) => h.angkatan === angkatan && h.predicted_result === "Buruk"
+      (h) => h.profiles?.angkatan === angkatan && h.predicted_result === "Buruk"
     ).length;
     return { baik, buruk };
   });

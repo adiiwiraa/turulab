@@ -9,7 +9,8 @@ const getPieData = (history, result) => {
   return GENDERS.map(
     (gender) =>
       history.filter(
-        (h) => h.jenis_kelamin === gender && h.predicted_result === result
+        (h) =>
+          h.profiles?.jenis_kelamin === gender && h.predicted_result === result
       ).length
   );
 };

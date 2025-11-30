@@ -18,7 +18,9 @@ const PredictedResultChart = ({ history }) => {
     data: RESULTS.map(
       (result) =>
         history.filter(
-          (h) => h.program_studi === program && h.predicted_result === result
+          (h) =>
+            h.profiles?.program_studi === program &&
+            h.predicted_result === result
         ).length
     ),
   }));
