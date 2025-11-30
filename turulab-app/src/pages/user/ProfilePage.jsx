@@ -7,6 +7,7 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [profile, setProfile] = useState({
     full_name: "",
     nim: "",
@@ -42,6 +43,7 @@ const ProfilePage = () => {
         }
 
         if (profileData) {
+          setIsAdmin(profileData.role === "admin");
           setProfile({
             full_name: profileData.full_name || "",
             nim: profileData.nim || "",
@@ -138,6 +140,7 @@ const ProfilePage = () => {
               name="full_name"
               value={profile.full_name}
               onChange={handleChange}
+              disabled={isAdmin}
               required
               className="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
               placeholder="Nama Lengkap"
@@ -157,6 +160,7 @@ const ProfilePage = () => {
               name="nim"
               value={profile.nim}
               onChange={handleChange}
+              disabled={isAdmin}
               required
               className="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
               placeholder="Contoh: 2110512000"
@@ -176,6 +180,7 @@ const ProfilePage = () => {
               name="email"
               value={profile.email}
               onChange={handleChange}
+              disabled={isAdmin}
               required
               className="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
               placeholder="anda@email.com"
@@ -194,6 +199,7 @@ const ProfilePage = () => {
               name="jenis_kelamin"
               value={profile.jenis_kelamin}
               onChange={handleChange}
+              disabled={isAdmin}
               required
               className="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
             >
@@ -215,6 +221,7 @@ const ProfilePage = () => {
               name="angkatan"
               value={profile.angkatan}
               onChange={handleChange}
+              disabled={isAdmin}
               required
               className="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
             >
@@ -240,6 +247,7 @@ const ProfilePage = () => {
               name="program_studi"
               value={profile.program_studi}
               onChange={handleChange}
+              disabled={isAdmin}
               required
               className="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
             >
@@ -267,18 +275,29 @@ const ProfilePage = () => {
               name="no_telepon"
               value={profile.no_telepon}
               onChange={handleChange}
+              disabled={isAdmin}
               className="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
               placeholder="Contoh: 081234567890"
             />
           </div>
 
+          {isAdmin && (
+            <p className="text-sm text-yellow-600">
+              Pengguna admin tidak dapat mengedit profil di halaman ini.
+            </p>
+          )}
+
           <div className="pt-4">
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || isAdmin}
               className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 disabled:bg-blue-400 disabled:cursor-not-allowed"
             >
-              {saving ? "Menyimpan..." : "Simpan Perubahan"}
+              {isAdmin
+                ? "Edit Dinonaktifkan"
+                : saving
+                ? "Menyimpan..."
+                : "Simpan Perubahan"}
             </button>
           </div>
         </form>
