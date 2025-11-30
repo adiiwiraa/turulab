@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
 import { predictionApiUrl } from "../../lib/config";
@@ -24,9 +24,6 @@ const QuestionnaireForm = () => {
 
   // State untuk menyimpan semua jawaban form
   const [answers, setAnswers] = useState({
-    jenis_kelamin: "",
-    angkatan: "",
-    program_studi: "",
     p1: "",
     p2: "",
     p3: "",
@@ -51,11 +48,53 @@ const QuestionnaireForm = () => {
   // Handler untuk memperbarui state jawaban
   const handleChange = (e) => {
     const { name, value, type } = e.target;
-    setAnswers((prev) => ({
-      ...prev,
-      [name]: type === "number" ? parseInt(value) : value,
-    }));
+    setAnswers((prev) => {
+      let processedValue = value;
+
+      // Handle number input
+      if (type === "number") {
+        // Untuk p4 (durasi tidur dengan step 0.1), gunakan parseFloat
+        if (name === "p4") {
+          if (value === "" || value === null || value === undefined) {
+            processedValue = "";
+          } else {
+            const numValue = parseFloat(value);
+            processedValue = isNaN(numValue) ? "" : numValue;
+          }
+        } else {
+          // Untuk number lainnya, gunakan parseInt
+          if (value === "" || value === null || value === undefined) {
+            processedValue = "";
+          } else {
+            const numValue = parseInt(value);
+            processedValue = isNaN(numValue) ? "" : numValue;
+          }
+        }
+      }
+
+      const newAnswers = {
+        ...prev,
+        [name]: processedValue,
+      };
+
+      // Jika p5_10 berubah menjadi 0 (Tidak pernah), reset answer_p5_10
+      if (name === "p5_10" && (value === "0" || parseInt(value) === 0)) {
+        newAnswers.answer_p5_10 = "";
+      }
+
+      return newAnswers;
+    });
   };
+
+  // useEffect untuk memastikan answer_p5_10 di-reset jika p5_10 adalah 0
+  useEffect(() => {
+    if (answers.p5_10 === 0 || answers.p5_10 === "0") {
+      setAnswers((prev) => ({
+        ...prev,
+        answer_p5_10: "",
+      }));
+    }
+  }, [answers.p5_10]);
 
   // Handler untuk submit form
   const handleSubmit = async (e) => {
@@ -107,13 +146,39 @@ const QuestionnaireForm = () => {
         throw new Error("User tidak ditemukan. Silakan login kembali.");
       }
 
-      // 3. Simpan hasil ke database Supabase
+      // 3. Ambil data profile user untuk mendapatkan jenis_kelamin, angkatan, program_studi
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("jenis_kelamin, angkatan, program_studi")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError) {
+        toast.dismiss(loadingToastId);
+        toast.error(
+          "Gagal mengambil data profil. Silakan lengkapi profil Anda terlebih dahulu."
+        );
+        navigate("/profil");
+        return;
+      }
+
+      if (
+        !profileData.jenis_kelamin ||
+        !profileData.angkatan ||
+        !profileData.program_studi
+      ) {
+        toast.dismiss(loadingToastId);
+        toast.error(
+          "Profil Anda belum lengkap. Silakan lengkapi jenis kelamin, angkatan, dan program studi terlebih dahulu."
+        );
+        navigate("/profil");
+        return;
+      }
+
+      // 4. Simpan hasil ke database Supabase
       const { error: insertError } = await supabase.from("predictions").insert([
         {
           user_id: user.id,
-          jenis_kelamin: answers.jenis_kelamin,
-          angkatan: answers.angkatan,
-          program_studi: answers.program_studi,
           p1_usual_bed_time: answers.p1,
           p2_sleep_latency: answers.p2,
           p3_usual_wake_time: answers.p3,
@@ -183,80 +248,6 @@ const QuestionnaireForm = () => {
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">NIM</h3>
-          <div className="space-y-4">
-            <input
-              type="text"
-              name="nim"
-              value={answers.nim}
-              onChange={handleChange}
-              required
-              className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-        </div> */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Jenis Kelamin
-          </h3>
-          <div className="space-y-4">
-            <select
-              name="jenis_kelamin"
-              value={answers.jenis_kelamin}
-              onChange={handleChange}
-              required
-              className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md"
-            >
-              <option value="">Pilih Jenis Kelamin</option>
-              <option value="Laki-laki">Laki-laki</option>
-              <option value="Perempuan">Perempuan</option>
-            </select>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Angkatan</h3>
-          <div className="space-y-4">
-            <select
-              name="angkatan"
-              value={answers.angkatan}
-              onChange={handleChange}
-              required
-              className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md"
-            >
-              <option value="" disabled>
-                Pilih Angkatan
-              </option>
-              <option value="2021">2021</option>
-              <option value="2022">2022</option>
-              <option value="2023">2023</option>
-              <option value="2024">2024</option>
-            </select>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Program Studi
-          </h3>
-          <div className="space-y-4">
-            <select
-              name="program_studi"
-              value={answers.program_studi}
-              onChange={handleChange}
-              required
-              className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md"
-            >
-              <option value="" disabled>
-                Pilih Program Studi
-              </option>
-              <option value="S1 Sistem Informasi">S1 Sistem Informasi</option>
-              <option value="S1 Informatika">S1 Informatika</option>
-              <option value="S1 Sains Data">S1 Sains Data</option>
-              <option value="D3 Sistem Informasi">D3 Sistem Informasi</option>
-            </select>
-          </div>
-        </div>
-
         <Question
           number="1"
           title="Dalam kurun waktu satu bulan ke belakang, biasanya pukul berapa Anda pergi tidur?"
@@ -307,12 +298,16 @@ const QuestionnaireForm = () => {
           <input
             type="number"
             step="0.1"
+            min="0"
+            max="24"
             name="p4"
-            value={answers.p4}
+            value={
+              answers.p4 === null || answers.p4 === undefined ? "" : answers.p4
+            }
             onChange={handleChange}
             required
             className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md"
-            placeholder="Contoh: 7"
+            placeholder="Contoh: 7 atau 7.5"
           />
         </Question>
 
@@ -511,7 +506,12 @@ const QuestionnaireForm = () => {
             name="answer_p5_10"
             value={answers.answer_p5_10}
             onChange={handleChange}
-            className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md"
+            disabled={answers.p5_10 === 0 || answers.p5_10 === "0"}
+            className={`w-full md:w-1/2 p-2 border border-gray-300 rounded-md ${
+              answers.p5_10 === 0 || answers.p5_10 === "0"
+                ? "bg-gray-100 opacity-50 cursor-not-allowed"
+                : ""
+            }`}
             placeholder="Gangguan tidur Anda yang lain"
           />
           <div className="space-y-4">
