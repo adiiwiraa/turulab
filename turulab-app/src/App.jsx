@@ -17,6 +17,7 @@ import LoginPage from "./pages/LoginPage";
 import UserDashboard from "./pages/user/UserDashboard";
 import QuestionnaireForm from "./pages/user/QuestionnaireForm";
 import ResultsPage from "./pages/user/ResultsPage";
+import ProfilePage from "./pages/user/ProfilePage";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserListPage from "./pages/admin/UserListPage";
@@ -111,6 +112,14 @@ function App() {
             element={
               <PrivateRoute session={session}>
                 <ResultsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profil"
+            element={
+              <PrivateRoute session={session}>
+                <ProfilePage />
               </PrivateRoute>
             }
           />

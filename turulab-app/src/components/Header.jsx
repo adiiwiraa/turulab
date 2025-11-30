@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 
 const Header = () => {
@@ -23,7 +24,10 @@ const Header = () => {
 
   return (
     <header className="w-full bg-white p-4 shadow flex justify-end">
-      <div className="flex items-center px-8 text-primary">
+      <Link
+        to="/profil"
+        className="flex items-center px-8 text-primary hover:underline"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -41,7 +45,7 @@ const Header = () => {
         <span className="font-bold ml-2">
           {profile?.full_name || "Pengguna"}
         </span>
-      </div>
+      </Link>
     </header>
   );
 };

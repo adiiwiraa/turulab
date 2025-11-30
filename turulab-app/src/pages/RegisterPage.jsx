@@ -8,6 +8,9 @@ const RegisterPage = () => {
   const [nim, setNim] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [jenisKelamin, setJenisKelamin] = useState("");
+  const [angkatan, setAngkatan] = useState("");
+  const [programStudi, setProgramStudi] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -17,24 +20,49 @@ const RegisterPage = () => {
     setLoading(true);
     setError("");
 
-    const { _data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          full_name: fullName,
-          nim: nim,
+    try {
+      // 1. Buat user di auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: fullName,
+            nim: nim,
+          },
         },
-      },
-    });
+      });
 
-    if (error) {
-      setError(error.message);
-    } else {
-      toast.success("Pendaftaran berhasil!");
-      navigate("/login");
+      if (authError) {
+        throw authError;
+      }
+
+      if (authData.user) {
+        // 2. Buat/update profile dengan data lengkap
+        const { error: profileError } = await supabase.from("profiles").upsert({
+          id: authData.user.id,
+          email: email,
+          nim: nim,
+          full_name: fullName,
+          jenis_kelamin: jenisKelamin,
+          angkatan: angkatan,
+          program_studi: programStudi,
+          role: "user",
+        });
+
+        if (profileError) {
+          throw profileError;
+        }
+
+        toast.success("Pendaftaran berhasil!");
+        navigate("/login");
+      }
+    } catch (err) {
+      setError(err.message);
+      toast.error("Gagal mendaftar: " + err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -97,6 +125,71 @@ const RegisterPage = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               placeholder="anda@email.com"
             />
+          </div>
+          <div>
+            <label
+              htmlFor="jenisKelamin"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Jenis Kelamin
+            </label>
+            <select
+              id="jenisKelamin"
+              required
+              value={jenisKelamin}
+              onChange={(e) => setJenisKelamin(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Pilih Jenis Kelamin</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="angkatan"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Angkatan
+            </label>
+            <select
+              id="angkatan"
+              required
+              value={angkatan}
+              onChange={(e) => setAngkatan(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="" disabled>
+                Pilih Angkatan
+              </option>
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="programStudi"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Program Studi
+            </label>
+            <select
+              id="programStudi"
+              required
+              value={programStudi}
+              onChange={(e) => setProgramStudi(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="" disabled>
+                Pilih Program Studi
+              </option>
+              <option value="S1 Sistem Informasi">S1 Sistem Informasi</option>
+              <option value="S1 Informatika">S1 Informatika</option>
+              <option value="S1 Sains Data">S1 Sains Data</option>
+              <option value="D3 Sistem Informasi">D3 Sistem Informasi</option>
+            </select>
           </div>
           <div>
             <label
