@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import toast from "react-hot-toast";
+
+// Components Imports
 import PredictedResultChart from "../../components/PredictedResultChart";
 import PredictedResultPieChart from "../../components/PredictedResultPieChart";
 import PredictedResultCountChart from "../../components/PredictedResultCountChart";
 import PredictedResultByAngkatanChart from "../../components/PredictedResultByAngkatanChart";
 import TabbedRecommendations from "../TabbedRecommendations";
 
+// =========================================
+// 1. SUB-COMPONENTS
+// =========================================
+
+/**
+ * Komponen Kartu Statistik Sederhana
+ * Menampilkan angka total (User/Prediksi) dengan state loading skeleton.
+ */
 const StatCard = ({ title, value, loading }) => (
   <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
     <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">
@@ -22,24 +32,46 @@ const StatCard = ({ title, value, loading }) => (
   </div>
 );
 
+// =========================================
+// 2. MAIN COMPONENT
+// =========================================
+
+/**
+ * Halaman Dashboard Admin
+ * Berfungsi sebagai pusat pemantauan data sistem.
+ * Fitur Utama:
+ * 1. Kartu Statistik (Total User & Total Prediksi).
+ * 2. Visualisasi Grafik (Chart) dengan Filter Tahun Ajaran & Semester.
+ * 3. Manajemen Rekomendasi Tidur Umum.
+ */
 const AdminDashboard = () => {
-  // State untuk statistik dasar (jumlah user & prediksi)
+  // =========================================
+  // 3. STATE MANAGEMENT
+  // =========================================
+
+  // State Statistik (Angka Total)
   const [stats, setStats] = useState({ users: null, predictions: null });
   const [loadingStats, setLoadingStats] = useState(true);
 
-  // State untuk data riwayat (untuk grafik)
+  // State Grafik (Data History)
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
-  // State untuk filter semester
+  // State Filter Waktu
   const [selectedAcademicYear, setSelectedAcademicYear] = useState("");
   const [selectedSemester, setSelectedSemester] = useState("");
 
-  // Helper function untuk generate tahun ajaran options
+  // =========================================
+  // 4. HELPER FUNCTIONS
+  // =========================================
+
+  /**
+   * Menghasilkan opsi Tahun Ajaran (5 tahun terakhir).
+   * Contoh output: ["2024/2025", "2023/2024", ...]
+   */
   const getAcademicYearOptions = () => {
     const currentYear = new Date().getFullYear();
     const years = [];
-    // Generate 5 tahun ajaran terakhir (dari tahun sekarang ke belakang)
     for (let i = 0; i < 5; i++) {
       const year = currentYear - i;
       years.push(`${year}/${year + 1}`);
@@ -47,21 +79,26 @@ const AdminDashboard = () => {
     return years;
   };
 
-  // Helper function untuk menghitung range tanggal berdasarkan semester
+  /**
+   * Menghitung rentang tanggal (Start & End) berdasarkan Semester.
+   * Logika Penting:
+   * - Ganjil (Gasal): Agustus (Tahun X) s/d Januari (Tahun X+1)
+   * - Genap: Februari (Tahun X+1) s/d Juli (Tahun X+1)
+   */
   const getSemesterDateRange = (academicYear, semester) => {
     if (!academicYear || !semester) return null;
 
-    // Parse tahun ajaran (format: "2025/2026")
+    // Parse tahun ajaran (misal: "2024/2025" -> start=2024, end=2025)
     const [startYear, endYear] = academicYear.split("/").map(Number);
 
     if (semester === "Genap") {
-      // Genap: Februari - Juli (bulan 2-7)
+      // Semester Genap ada di tahun kedua (Februari - Juli)
       return {
-        start: `${startYear}-02-01T00:00:00.000Z`,
-        end: `${startYear}-07-31T23:59:59.999Z`,
+        start: `${endYear}-02-01T00:00:00.000Z`,
+        end: `${endYear}-07-31T23:59:59.999Z`,
       };
     } else if (semester === "Ganjil") {
-      // Ganjil: Agustus - Januari tahun berikutnya (bulan 8-12 tahun sekarang, bulan 1 tahun berikutnya)
+      // Semester Ganjil mulai dari Agustus tahun pertama sampai Januari tahun kedua
       return {
         start: `${startYear}-08-01T00:00:00.000Z`,
         end: `${endYear}-01-31T23:59:59.999Z`,
@@ -70,21 +107,26 @@ const AdminDashboard = () => {
     return null;
   };
 
-  // Menggabungkan fetch stats dan history
+  // =========================================
+  // 5. DATA FETCHING (EFFECTS)
+  // =========================================
+
   useEffect(() => {
     const fetchData = async () => {
       setLoadingStats(true);
       setLoadingHistory(true);
 
+      // A. Fetch Data Statistik Angka (Total User & Prediksi)
       const fetchStatsPromise = async () => {
         try {
-          // Exclude admin dari user count
+          // Hitung User (Kecuali Admin)
           const { count: userCount, error: userError } = await supabase
             .from("profiles")
             .select("*", { count: "exact", head: true })
             .neq("role", "admin");
           if (userError) throw userError;
 
+          // Hitung Total Prediksi
           const { count: predictionCount, error: predictionError } =
             await supabase
               .from("predictions")
@@ -101,6 +143,7 @@ const AdminDashboard = () => {
         }
       };
 
+      // B. Fetch Data Grafik (History dengan Filter)
       const fetchHistoryPromise = async () => {
         try {
           let query = supabase
@@ -110,10 +153,10 @@ const AdminDashboard = () => {
             )
             .order("created_at", { ascending: false });
 
-          // Filter berdasarkan semester jika dipilih
+          // Terapkan Filter Tahun Ajaran & Semester
           if (selectedAcademicYear) {
             if (selectedSemester) {
-              // Filter per semester (6 bulan)
+              // 1. Filter Semester Spesifik (Range 6 Bulan)
               const dateRange = getSemesterDateRange(
                 selectedAcademicYear,
                 selectedSemester
@@ -124,7 +167,7 @@ const AdminDashboard = () => {
                   .lte("created_at", dateRange.end);
               }
             } else {
-              // Jika hanya tahun ajaran dipilih, filter seluruh tahun ajaran (Agustus - Juli tahun berikutnya)
+              // 2. Filter Satu Tahun Ajaran Penuh (Agustus - Juli)
               const [startYear, endYear] = selectedAcademicYear
                 .split("/")
                 .map(Number);
@@ -147,17 +190,22 @@ const AdminDashboard = () => {
         }
       };
 
+      // Jalankan kedua request secara paralel agar lebih cepat
       await Promise.all([fetchStatsPromise(), fetchHistoryPromise()]);
     };
 
     fetchData();
-  }, [selectedAcademicYear, selectedSemester]);
+  }, [selectedAcademicYear, selectedSemester]); // Re-fetch saat filter berubah
+
+  // =========================================
+  // 6. RENDER UI
+  // =========================================
 
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold text-gray-800">Dashboard Admin</h1>
 
-      {/* Section Statistik */}
+      {/* --- SECTION 1: KARTU STATISTIK --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <StatCard
           title="Total Pengguna"
@@ -171,14 +219,14 @@ const AdminDashboard = () => {
         />
       </div>
 
-      {/* Section Grafik */}
+      {/* --- SECTION 2: GRAFIK VISUALISASI --- */}
       <div className="mt-8">
         <div className="flex flex-wrap items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-gray-800">
             Visualisasi Data Prediksi
           </h2>
 
-          {/* Filter Semester */}
+          {/* Filter Bar (Tahun Ajaran & Semester) */}
           <div className="flex flex-wrap items-center gap-4 mt-4 sm:mt-0">
             <div className="flex items-center gap-2">
               <label
@@ -192,7 +240,7 @@ const AdminDashboard = () => {
                 value={selectedAcademicYear}
                 onChange={(e) => {
                   setSelectedAcademicYear(e.target.value);
-                  // Reset semester jika tahun ajaran diubah
+                  // Reset semester jika tahun ajaran dikosongkan/diubah
                   if (!e.target.value) {
                     setSelectedSemester("");
                   }
@@ -229,22 +277,22 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Chart Containers */}
         {loadingHistory ? (
+          // Skeleton Loading untuk Grafik
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-64 flex justify-center items-center text-gray-400">
-              Memuat Grafik...
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-64 flex justify-center items-center text-gray-400">
-              Memuat Grafik...
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-64 flex justify-center items-center text-gray-400">
-              Memuat Grafik...
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-64 flex justify-center items-center text-gray-400">
-              Memuat Grafik...
-            </div>
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-64 flex justify-center items-center text-gray-400"
+              >
+                Memuat Grafik...
+              </div>
+            ))}
           </div>
         ) : history.length > 0 ? (
+          // Tampilkan 4 Grafik Utama
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white shadow-md rounded-lg overflow-hidden p-6">
               <PredictedResultCountChart history={history} />
@@ -260,6 +308,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         ) : (
+          // State Kosong (Empty State)
           <div className="bg-white p-8 rounded-lg shadow-md text-center border border-dashed border-gray-300">
             <p className="text-gray-500">
               Belum ada data prediksi untuk ditampilkan dalam grafik.
@@ -268,7 +317,7 @@ const AdminDashboard = () => {
         )}
       </div>
 
-      {/* Section Rekomendasi */}
+      {/* --- SECTION 3: REKOMENDASI UMUM --- */}
       <div className="mt-8 mb-15">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
           Rekomendasi Tidur Umum
