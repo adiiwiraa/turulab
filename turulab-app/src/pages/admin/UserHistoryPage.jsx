@@ -421,7 +421,7 @@ const UserHistoryPage = () => {
           disabled={history.length === 0}
           className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
         >
-          <span>📥</span> Unduh Laporan CSV
+          Unduh Laporan CSV
         </button>
       </div>
 
