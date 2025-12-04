@@ -5,6 +5,9 @@
 .DS_Store
 .idea/
 
+# Node modules di root
+/node_modules/
+
 # Aturan khusus untuk VSCode
 .vscode/*
 !.vscode/extensions.json
