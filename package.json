@@ -2,6 +2,8 @@
   "name": "turulab-root",
   "private": true,
   "scripts": {
+    "postinstall": "bun run install-modules",
+    "install-modules": "concurrently \"bun install --cwd turulab-app\" \"cd turulab-backend && python -m venv venv && venv\\Scripts\\pip install -r requirements.txt\"",
     "frontend": "cd turulab-app && bun run dev",
     "backend": "cd turulab-backend && venv/Scripts/python app.py",
     "start": "concurrently \"bun run frontend\" \"bun run backend\" --names \"FRONTEND,BACKEND\" --prefix-colors \"blue,yellow\""
